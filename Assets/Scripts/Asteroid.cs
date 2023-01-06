@@ -3,6 +3,7 @@ using UnityEngine;
 public class Asteroid : MonoBehaviour
 {
     public Sprite[] sprites;
+
     public float size = 1.0f;
     public float minSize = 0.5f;
     public float maxSize = 1.5f;
@@ -29,5 +30,30 @@ public class Asteroid : MonoBehaviour
     {
         _rigidbody.AddForce(direction * speed);
         Destroy(gameObject, maxLifetime);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.tag == "Bullet")
+        {
+            if (size * 0.5f) > minSize)
+            {
+                CreateSplit();
+                CreateSplit();
+            }
+
+            Destroy(gameObject);
+        }
+    }
+
+    private void CreateSplit()
+    {
+        Vector2 position = this.transform.position;
+        position += Random.insideUnitCircle * 0.5f;
+        
+        Asteroid half = Instantiate(this, position, this.transform.rotation);
+        half.size = this.size * 0.5f;
+
+        half.SetTrajectory(Random.insideUnitCircle.normalized);
     }
 }
